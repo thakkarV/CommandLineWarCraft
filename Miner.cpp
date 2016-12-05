@@ -56,10 +56,7 @@ bool Miner::update()
 
 				return true;
 			}
-			else
-			{
-				return false;
-			}
+			else return false;
 		}
 		case 'o' : // outbound
 		{

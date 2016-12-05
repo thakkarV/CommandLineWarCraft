@@ -74,15 +74,12 @@ bool Soldier::update()
 
 				return true;
 			}
-			else
-			{
-				return false;
-			}
+			else return false;
 		}
 		case 'a' : // attacking
 		{
 			// first check distence to target once again
-			double attackDistance = cart_distance(this-> location, this-> target-> get_location());;
+			double attackDistance = cart_distance(this-> location, this-> target-> get_location());
 
 			// if within the range of attack...
 			if (attackDistance <= this-> range)
@@ -100,7 +97,7 @@ bool Soldier::update()
 				{
 					// if the target dieded, stop and gloat
 					this-> state = 's';
-					std::cout << this-> display_code << this-> get_id() << "I triumph!" << std::endl;
+					std::cout << this-> display_code << this-> get_id() << ": I triumph!" << std::endl;
 					return true;
 				}
 			}

@@ -5,37 +5,42 @@ Model::Model()
 {
 	this-> time = 0;
 
-	// now we make the default game objects
+	// first instantiate all the linked lists
 
-	person_ptrs[0] = new Miner(1, Cart_Point(5,1)); // first default miner
-	object_ptrs[0] = person_ptrs[0]; // same pointer in person(0)
+	person_ptrs.push_back(new Miner(1, Cart_Point(5,1))); // first default miner
+	object_ptrs.push_back(person_ptrs.back()); // same pointer in person(0)
+	active_ptrs.push_back(object_ptrs.back());
 
-	person_ptrs[1] = new Miner(2, Cart_Point(10,1)); // second default miner
-	object_ptrs[1] = person_ptrs[1];
+	person_ptrs.push_back(new Miner(2, Cart_Point(10,1))); // second default miner
+	object_ptrs.push_back(person_ptrs.back());
+	active_ptrs.push_back(object_ptrs.back());
 
-	mine_ptrs[0] = new Gold_Mine(1, Cart_Point(1,20)); // first default gold mine
-	object_ptrs[2] = mine_ptrs[0];
+	mine_ptrs.push_back(new Gold_Mine(1, Cart_Point(1,20))); // first default gold mine
+	object_ptrs.push_back(mine_ptrs.back());
+	active_ptrs.push_back(object_ptrs.back());
 
-	mine_ptrs[1] = new Gold_Mine(2, Cart_Point(10,20)); // second default gold mine
-	object_ptrs[3] = mine_ptrs[1];
+	mine_ptrs.push_back(new Gold_Mine(2, Cart_Point(10,20))); // second default gold mine
+	object_ptrs.push_back(mine_ptrs.back());
+	active_ptrs.push_back(object_ptrs.back());
 
-	hall_ptrs[0] = new Town_Hall(1, Cart_Point()); // default town hall
-	object_ptrs[4] = hall_ptrs[0];
+	hall_ptrs.push_back(new Town_Hall(1, Cart_Point())); // default town hall
+	object_ptrs.push_back(hall_ptrs.back());
+	active_ptrs.push_back(object_ptrs.back());
 
-	person_ptrs[2] = new Soldier(3, Cart_Point(5,15)); // first default miner
-	object_ptrs[5] = person_ptrs[2]; // same pointer in person(0)
+	person_ptrs.push_back(new Soldier(3, Cart_Point(5,15))); // first default miner
+	object_ptrs.push_back(person_ptrs.back()); // same pointer in person(0)
+	active_ptrs.push_back(object_ptrs.back());
 
-	person_ptrs[3] = new Soldier(4, Cart_Point(10,15)); // second default miner
-	object_ptrs[6] = person_ptrs[3];
+	person_ptrs.push_back(new Soldier(4, Cart_Point(10,15))); // second default miner
+	object_ptrs.push_back(person_ptrs.back());
+	active_ptrs.push_back(object_ptrs.back());
 
-
-	// so at the start we have a total of 5 game objects
-	num_objects = 7;
-
-	// 2 miners, 2 gold mines and 1 town hall
-	num_persons = 4;
-	num_mines = 2;
-	num_halls = 1;
+	// now assing begin iterators to their variables
+	object_itr = object_ptrs.begin();
+	active_itr = active_ptrs.begin();
+	person_itr = person_ptrs.begin();
+	mine_itr = mine_ptrs.begin();
+	hall_itr = hall_ptrs.begin();
 
 	std::cout << "Model constructed." << std::endl;
 }
@@ -43,9 +48,9 @@ Model::Model()
 // DESTRUCTOR
 Model::~Model()
 {
-	for (int i = 0; i < this->num_objects; i++)
+	for (object_itr = object_ptrs.begin(); object_itr != object_ptrs.end(); object_itr++)
 	{
-		delete object_ptrs[i];
+		delete *object_itr;
 	}
 	std::cout << "Model destructed." << std::endl;
 }
@@ -53,11 +58,11 @@ Model::~Model()
 // PUBLIC MEMBER FUNCTION
 Person * Model::get_Person_ptr(int id)
 {
-	for (int i = 0; i < this-> num_persons; i++)
+	for (person_itr = person_ptrs.begin(); person_itr != person_ptrs.end(); person_itr++)
 	{
-		if (this-> person_ptrs[i]-> get_id() == id)
+		if ((*person_itr)-> get_id() == id)
 		{
-			return person_ptrs[i];
+			return *person_itr;
 		}
 	}
 	// else return null ptr
@@ -67,11 +72,11 @@ Person * Model::get_Person_ptr(int id)
 // PUBLIC MEMBER FUNCTION
 Gold_Mine * Model::get_Gold_Mine_ptr(int id)
 {
-	for (int i = 0; i < this-> num_mines; i++)
+	for (mine_itr = mine_ptrs.begin(); mine_itr != mine_ptrs.end(); mine_itr++)
 	{
-		if (this-> mine_ptrs[i]-> get_id() == id)
+		if ((*mine_itr)-> get_id() == id)
 		{
-			return this-> mine_ptrs[i];
+			return *mine_itr;
 		}
 	}
 	// else return null ptr
@@ -81,11 +86,11 @@ Gold_Mine * Model::get_Gold_Mine_ptr(int id)
 // PUBLIC MEMBER FUNCTION
 Town_Hall * Model::get_Town_Hall_ptr(int id)
 {
-	for (int i = 0; i < this-> num_halls; i++)
+	for (hall_itr = hall_ptrs.begin(); hall_itr != hall_ptrs.end(); hall_itr++)
 	{
-		if (this-> hall_ptrs[i]-> get_id() == id)
+		if ((*hall_itr)-> get_id() == id)
 		{
-			return this-> hall_ptrs[i];
+			return *hall_itr;
 		}
 	}
 	// else return null ptr
@@ -100,16 +105,26 @@ bool Model::update()
 	// retruns true if any of those update functions retrurns true
 
 	int events = 0;
-	// first update all persons
-	for (int i = 0; i < this-> num_objects; i++)
+	
+	// update all objects in a loop
+	for (active_itr = active_ptrs.begin(); active_itr != active_ptrs.end(); active_itr++)
 	{
-		if ( this-> object_ptrs[i]-> update() )
+		if ((*active_itr)-> update())
 		{
 			events++;
 		}
 	}
 
-	// now check if any values in the vector are true, and if yes, return ture
+	// now see if the object is still alive after the update
+	for (active_itr = active_ptrs.begin(); active_itr != active_ptrs.end(); active_itr++)
+	{
+		if (!(*active_itr)->is_alive()) // object is dead
+		{
+			active_itr = active_ptrs.erase(active_itr);
+		}
+	}
+
+	// if number of events is more than one then return true
 	if (events > 0)
 	{
 		return true;
@@ -123,14 +138,10 @@ void Model::display(View * view)
 	// first clear grid
 	view-> clear();
 
-	// now plot everything into the cleared grid
-	for (int i = 0; i < this-> num_objects; i++)
+	// now plot only the alive objects onto the grid
+	for (active_itr = active_ptrs.begin(); active_itr != active_ptrs.end(); active_itr++)
 	{
-		// we only draw the object if it is alive
-		if (this-> object_ptrs[i]-> is_alive())
-		{
-			view-> plot(this-> object_ptrs[i]);
-		}
+		view-> plot(*active_itr);
 	}
 	// now draw grid
 	view-> draw();
@@ -143,8 +154,8 @@ void Model::show_status()
 	std::cout << "Time: " << this-> time << std::endl;
 
 	// call the show_status() of all objects in a loop
-	for (int i = 0; i < this-> num_objects; i++)
+	for (object_itr = object_ptrs.begin(); object_itr != object_ptrs.end(); object_itr++)
 	{
-		this-> object_ptrs[i]-> show_status();
+		(*object_itr)-> show_status();
 	}
 }

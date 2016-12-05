@@ -95,18 +95,19 @@ void Person::show_status()
 bool Person::is_alive()
 {
 	// returns true if the person is alive
-	if (this-> state != 'x')
+	std::cout << "current state of person " << this-> get_id() << " is " << this-> state << std::endl;	
+	if (this-> state == 'x')
 	{
-		return true;
+		return false;
 	}
-	else return false;
+	else return true;
 }
 
 // PUBLIC MEMBER FUCTION
 void Person::take_hit(int attack_strength)
 {
 	// check if the health is less than the attac strength
-	if (this-> health < attack_strength)
+	if (this-> health > attack_strength)
 	{
 		this-> health -= attack_strength;
 	}

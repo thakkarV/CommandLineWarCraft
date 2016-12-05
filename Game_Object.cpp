@@ -37,20 +37,20 @@ void Game_Object::drawself(char * pointer)
 // PUBLIC MEMBER FUNCTION
 Cart_Point Game_Object::get_location()
 {
-	return this->location;
+	return this-> location;
 }
 
 // PUBLIC MEMBER FUNCTION
 int Game_Object::get_id()
 {
 	// returns the integer id of the mine
-	return this->id_num;
+	return this-> id_num;
 }
 
 // VIRTUAL PUBLIC MEMBER FUNCTION
 void Game_Object::show_status()
 {
-	std::cout << this->display_code << this->id_num << " at location " << this->location << " ";
+	std::cout << this-> display_code << this-> id_num << " at location " << this-> location << " ";
 }
 
 // VIRTUAL PUBLIC MEMBER FUNCTION

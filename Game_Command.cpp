@@ -57,7 +57,7 @@ void stop(Model * model, View * view, int personID)
 void go(Model * model, View * view)
 {
 	std::cout << "Advancing one tick." << std::endl;
-	bool throwaway = model->update();
+	bool throwaway = model-> update();
 	model-> show_status();
 	model-> display(view);
 }
@@ -88,4 +88,123 @@ bool quitGame(Model * model)
 	std::cout << "Terminating program." << std::endl;
 	delete model;
 	return false;
+}
+
+void getInputStream(char & cmdCode, std::string & inputString)
+{
+	std::getline(std::cin, inputString); // get input using getline
+
+	if (inputString.size() == 0)
+	{
+		throw Invalid_Input("Please enter a command.");
+	}
+	else
+	{
+		// if the size was not zero, extract the commnad code and sput out the stream and the command
+		std::istringstream inputStream(inputString);
+
+		if (! (inputStream >> cmdCode) )
+		{
+			throw Invalid_Input("Expected a charecter for command code.");
+		}
+		else
+		{
+			cleanInputString(inputString); // then clean the input string
+		}
+	}
+}
+
+char getChar(std::string & inputString)
+{
+// first convert the string to an input stream
+	std::istringstream inputStream(inputString);
+
+	char charInput;
+	if (! (inputStream >> charInput) )
+	{
+		throw Invalid_Input("Expected a charecter.");
+	}
+	else
+	{
+		cleanInputString(inputString);
+		return charInput;
+	}
+}
+
+int getInt(std::string & inputString)
+{
+	// first convert the string to an input stream
+	std::istringstream inputStream(inputString);
+
+	int intInput;
+	if (! (inputStream >> intInput) )
+	{
+		throw Invalid_Input("Expected an integer.");
+	}
+	else
+	{
+		cleanInputString(inputString);
+		return intInput;
+	}
+}
+
+double getDouble(std::string & inputString)
+{
+	// first convert the string to an input stream
+	std::istringstream inputStream(inputString);
+
+	double doubleInput;
+	if (! (inputStream >> doubleInput) )
+	{
+		throw Invalid_Input("Expected a real number.");
+	}
+	else
+	{
+		cleanInputString(inputString);
+		return doubleInput;
+	}
+}
+
+void cleanInputString(std::string & inputString)
+{
+	// to change the inputString appropriately to drop the first parameter, 
+	// we first check if the first cahrecter is a space or not
+	if (inputString.at(0) == ' ')
+	{
+		// if it is then find location fo the first non-space char
+		std::size_t firstCharLocation = inputString.find_first_not_of(" ");
+
+		// and location of the first space after that
+		std::size_t secondSpaceLocation = inputString.find_first_of(" ", firstCharLocation);
+		
+		// if the secondSpaceLocation does not exist then we erase the whole string
+		if (secondSpaceLocation == std::string::npos)
+		{
+			// erase the whole string
+			inputString.clear();
+		}
+		else
+		{
+			// otherwise just erase from the begin of the string till the first space
+			inputString.erase(0, secondSpaceLocation);
+		}
+	}
+	else // otherwise if the first element is not a 
+	{
+		std::size_t firstSpaceLocation = inputString.find_first_of(" ");
+
+		inputString.erase(0, firstSpaceLocation);
+	}
+}
+
+void checkBloatedInput(std::string & inputString)
+{
+	// this function serves the sole purpose of throwing an exception
+	// if the input had more number of parameters than the command allows
+	// even if the leading parameter were of the appropriate foramt
+
+	if (inputString.find_first_not_of(" ") != std::string::npos)
+	{
+		throw Invalid_Input("More input parameters than expected.");
+	}
 }

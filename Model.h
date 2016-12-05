@@ -12,6 +12,7 @@
 #include "Soldier.h"
 
 #include <iostream>
+#include <list>
 
 class Model
 {
@@ -22,7 +23,7 @@ public:
 	// DESTRUCTOR
 	~Model();
 
-	// Lookup and validation functions for each array of pointers
+	// Lookup and validation functions for each linked list of pointers
 	Person * get_Person_ptr(int id);
 	Gold_Mine * get_Gold_Mine_ptr(int id);
 	Town_Hall * get_Town_Hall_ptr(int id);
@@ -40,25 +41,25 @@ private:
 	int time;
 	// stores the current time tick of the game
 
-	Game_Object * object_ptrs[10];
-	// array of pointers to all game objects
-	int num_objects; 
-	// stores the number of game objects = size of object_ptrs[]
+	// linked list of pointers to all game objects and assosiated start iterator
+	std::list < Game_Object * > object_ptrs;
+	std::list<Game_Object * >::iterator object_itr;
 
-	Person * person_ptrs[10];
-	// array of pointers to all person objects in game
-	int num_persons;
-	// stores the number of person objects = size of person_pters[]
+	// linked list of alive game object and associated start iterators
+	std::list < Game_Object * > active_ptrs;
+	std::list< Game_Object * >::iterator active_itr;
 
-	Gold_Mine * mine_ptrs[10];
-	// array of pointers to all game mines in the game
-	int num_mines;
-	// stores the number of gold mines = size of mine_ptrs[]
+	// linked list of pointers to all person objects in game and assosicated start iterator
+	std::list < Person * > person_ptrs;
+	std::list< Person * >::iterator person_itr;
 
-	Town_Hall * hall_ptrs[10];
-	// array of pointers to all town halls in the game
-	int num_halls;
-	// stores the number of all town halls = size of hall_ptrs[]
+	// linked list of pointers to all game mines in the game and associated start iterator
+	std::list < Gold_Mine * > mine_ptrs;
+	std::list< Gold_Mine * >::iterator mine_itr;
+	
+	// linked list of pointers to all town halls in the game and associated start iterator
+	std::list < Town_Hall * > hall_ptrs;
+	std::list< Town_Hall * >::iterator hall_itr;
 
 	// PRIVATE COPY CONSTRUCTOR
 	Model(const Model & object);
