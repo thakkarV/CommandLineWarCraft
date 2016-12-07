@@ -95,7 +95,6 @@ void Person::show_status()
 bool Person::is_alive()
 {
 	// returns true if the person is alive
-	std::cout << "current state of person " << this-> get_id() << " is " << this-> state << std::endl;	
 	if (this-> state == 'x')
 	{
 		return false;

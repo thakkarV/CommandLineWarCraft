@@ -1,7 +1,6 @@
 #ifndef INPUT_HANDLING_H
 #define INPUT_HANDLING_H
 
-
 class Invalid_Input
 {
 public :

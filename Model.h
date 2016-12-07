@@ -10,6 +10,7 @@
 #include "Person.h"
 #include "View.h"
 #include "Soldier.h"
+#include "Input_Handling.h"
 
 #include <iostream>
 #include <list>
@@ -36,6 +37,9 @@ public:
 
 	// outputs the status of all the game objects by calling their show status function
 	void show_status();
+
+	// this function makes the new object input to it when called upon by game command
+	void handleNew(char type, char inputID, double xcord, double ycord);
 	
 private:
 	int time;

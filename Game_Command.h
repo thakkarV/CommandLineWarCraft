@@ -12,8 +12,8 @@
 #include <sstream>
 #include <iostream>
 
-
 // game commands
+void makeNew(Model * model, View * view, char type, char inputID, double xcord, double ycord);
 void move(Model * model, View * view, int personID, double xcord, double ycord);
 void work(Model * model, View * view, int personID, int mineID, int hallID);
 void attack(Model * model, View * view, int soldierID, int personID);
@@ -25,9 +25,9 @@ bool quitGame(Model * model);
 
 // string input and extraction functions
 void getInputStream(char & cmdCode, std::string & inputString);
-char getChar(std::string & inputStream);
-int getInt(std::string & inputStream);
-double getDouble(std::string & inputStream);
+char getChar(std::string & inputString);
+int getInt(std::string & inputString);
+double getDouble(std::string & inputString);
 
 // input string cleanup and bloat checkers
 void cleanInputString(std::string & inputString);

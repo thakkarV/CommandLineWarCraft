@@ -39,7 +39,7 @@ Miner.o: Miner.cpp Miner.h Person.h Game_Object.h Gold_Mine.h Town_Hall.h Cart_P
 Soldier.o: Soldier.cpp Soldier.h Person.h
 	$(CC) $(CPPFLAGSFCP) Soldier.cpp $(CXXFLAGS) Soldier.o
 
-Model.o: Model.cpp Model.h Game_Object.h Person.h Town_Hall.h Gold_Mine.h Miner.h View.h Soldier.h Input_Handling.h
+Model.o: Model.cpp Model.h Input_Handling.h Game_Object.h Person.h Town_Hall.h Gold_Mine.h Miner.h View.h Soldier.h Input_Handling.h
 	$(CC) $(CPPFLAGSFCP) Model.cpp $(CXXFLAGS) Model.o 
 
 Town_Hall.o: Town_Hall.cpp Town_Hall.h Game_Object.h Cart_Point.h

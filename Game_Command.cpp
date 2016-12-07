@@ -1,15 +1,28 @@
 #include "Game_Command.h"
 
+void makeNew(Model * model, View * view, char type, char inputID, double xcord, double ycord)
+{
+	model-> handleNew(type, inputID, xcord, ycord);
+	model-> display(view);
+}
+
 void move(Model * model, View * view, int personID, double xcord, double ycord)
 {
 	// first try to get the pointer to the person we are trying to move
 	Person * personPtr = model-> get_Person_ptr(personID);
+	
+	// if it does not  exist, throw an exception
 	if (personPtr != 0)
 	{
 		// if the minser exists then set it moving towards that location
 		personPtr-> start_moving(Cart_Point(xcord, ycord));
 		// moving message will be displayed by start_moving function from person.cpp
 	}
+	else
+	{
+		throw Invalid_Input("Person with entered ID number does not exist.");
+	}
+
 	model-> display(view);
 }
 
@@ -26,6 +39,19 @@ void work(Model * model, View * view, int personID, int mineID, int hallID)
 		minerPtr-> start_mining(minePtr, hallPtr);
 		// mining message will be displayed by the start_minig function in miner.cpp
 	}
+	else if (minerPtr == 0)
+	{
+		throw Invalid_Input("Miner with entered ID does not exist.");
+	}
+	else if (minePtr == 0)
+	{
+		throw Invalid_Input("Gold mine with entered ID does not exist.");
+	}
+	else // if hall pointer is null
+	{
+		throw Invalid_Input("Town hall with entered ID does not exist.");
+	}
+
     model-> display(view);
 }
 
@@ -39,6 +65,15 @@ void attack(Model * model, View * view, int soldierID, int personID)
 		// if both ID numbers were valid then start attacking	
 		soldierPtr-> start_attack(personPtr);
 	}
+	else if (soldierPtr)
+	{
+		throw Invalid_Input("Solider with entered ID does not exist.");
+	}
+	else
+	{
+		throw Invalid_Input("Target with entered ID does not exist.");
+	}
+
 	model-> display(view);
 }
 
@@ -46,11 +81,17 @@ void stop(Model * model, View * view, int personID)
 {
 	// get pointer first
 	Person * personPtr = model->get_Person_ptr(personID);
+
 	if (personPtr != 0)
 	{
 		personPtr->stop();
 		// stopping message will by ouput by the stop function in person.cpp
 	}
+	else
+	{
+		throw Invalid_Input("Person with entered ID number does not exist.");
+	}
+
 	model-> display(view);
 }
 
@@ -67,19 +108,19 @@ void run(Model * model, View * view)
 	std::cout << "Advancing to next event." << std::endl;
 	bool throwaway = false;
 	int counter = 0;
+
 	while (!throwaway && counter < 5)
 	{
 		throwaway = model-> update();
 		counter++;
 	}
+
 	model-> show_status();
 	model-> display(view);
 }
 
 void list(Model * model)
 {
-	// this function is intended to only show the current status of all game objects
-	// without advancing time, giving any commands to any objects or re-drawing the grid
 	model-> show_status();
 }
 
@@ -92,31 +133,26 @@ bool quitGame(Model * model)
 
 void getInputStream(char & cmdCode, std::string & inputString)
 {
+	// this funciton is the first one called by the  main to get the entire user input command as a string
+	// once this string is input this function checkts for size, extracts command code, chomps it off
+	// and then writes the cmdCode and original input string back as a return since they are PBR
+
 	std::getline(std::cin, inputString); // get input using getline
 
+	// check for empty command
 	if (inputString.size() == 0)
 	{
 		throw Invalid_Input("Please enter a command.");
 	}
 	else
 	{
-		// if the size was not zero, extract the commnad code and sput out the stream and the command
-		std::istringstream inputStream(inputString);
-
-		if (! (inputStream >> cmdCode) )
-		{
-			throw Invalid_Input("Expected a charecter for command code.");
-		}
-		else
-		{
-			cleanInputString(inputString); // then clean the input string
-		}
+		cmdCode = getChar(inputString);
 	}
 }
 
 char getChar(std::string & inputString)
 {
-// first convert the string to an input stream
+	// first convert the string to an input stream
 	std::istringstream inputStream(inputString);
 
 	char charInput;
@@ -126,6 +162,7 @@ char getChar(std::string & inputString)
 	}
 	else
 	{
+		// chomp of the extracted char and return it
 		cleanInputString(inputString);
 		return charInput;
 	}
@@ -141,8 +178,13 @@ int getInt(std::string & inputString)
 	{
 		throw Invalid_Input("Expected an integer.");
 	}
+	else if (intInput > 9)
+	{
+		throw Invalid_Input("ID number cannot exceed a value of 9.");
+	}
 	else
 	{
+		// chomp off the extracted int and return it
 		cleanInputString(inputString);
 		return intInput;
 	}
@@ -160,6 +202,7 @@ double getDouble(std::string & inputString)
 	}
 	else
 	{
+		// chomp off the extracted double and return it
 		cleanInputString(inputString);
 		return doubleInput;
 	}
@@ -168,7 +211,7 @@ double getDouble(std::string & inputString)
 void cleanInputString(std::string & inputString)
 {
 	// to change the inputString appropriately to drop the first parameter, 
-	// we first check if the first cahrecter is a space or not
+	// we first check if the first charecter is a space or not
 	if (inputString.at(0) == ' ')
 	{
 		// if it is then find location fo the first non-space char

@@ -63,7 +63,17 @@ int main()
                     continueLoop = quitGame(model);
                     break;
                 }
-                case 'm' : // MOVE: input string format: "m 1 20 17" (miner id, xcord, ycord)
+                case 'n' : // NEW: input string format: "n \type \ID \x \y"
+                {
+                    char type = getChar(inputString);
+                    id1 = getInt(inputString);
+                    x = getDouble(inputString);
+                    y = getDouble(inputString);
+                    checkBloatedInput(inputString);
+                    makeNew(model, view, type, id1, x, y);
+                    break;
+                }
+                case 'm' : // MOVE: input string format: "m \ID \x \y"
                 {
                     id1 = getInt(inputString);
                     x = getDouble(inputString);
@@ -72,7 +82,7 @@ int main()
                     move(model, view, id1, x, y);
                     break;
                 }
-                case 'w' : // WORK: input string format "w 1 2 0" (miner id, mine id, hall id)
+                case 'w' : // WORK: input string format "w \minerID \mineID \hallID"
                 {
                     id1 = getInt(inputString);
                     id2 = getInt(inputString);
@@ -81,7 +91,7 @@ int main()
                     work(model, view, id1, id2, id3);
                     break;
                 }
-                case 'a' : // ATTACK: input string format "a 1 2" (solderi id, person id)
+                case 'a' : // ATTACK: input string format "a \soldier ID \personID"
                 {
                     id1 = getInt(inputString);
                     id2 = getInt(inputString);
@@ -89,7 +99,7 @@ int main()
                     attack(model, view, id1, id2);
                     break;
                 }
-                case 's' : // STOP: input string format "s 1" (person id)
+                case 's' : // STOP: input string format "s \personID"
                 {
                     id1 = getInt(inputString);
                     checkBloatedInput(inputString);

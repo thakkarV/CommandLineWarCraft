@@ -159,3 +159,82 @@ void Model::show_status()
 		(*object_itr)-> show_status();
 	}
 }
+
+// PUBLIC MEMBER FUNCTION
+void Model::handleNew(char type, char inputID, double xcord, double ycord)
+{
+	switch (type)
+	{
+		case 'g' : // GOLDMINE
+		{
+			// first we error check to see if a mine of the same ID already exists
+			Gold_Mine * minePtr = this-> get_Gold_Mine_ptr(inputID);
+
+			// if the mine does not already exists then make it and add it to all the lists
+			if (minePtr == 0)
+			{
+				this-> mine_ptrs.push_back(new Gold_Mine(inputID, Cart_Point(xcord, ycord)));
+				this-> object_ptrs.push_back(mine_ptrs.back());
+				this-> active_ptrs.push_back(mine_ptrs.back());
+			}
+			else
+			{
+				// otherwise throw an exception
+				throw Invalid_Input("Gold Mine of input ID already exists.");	
+			}
+			break;
+		}
+		case 't' : // TOWNHALL
+		{
+			Town_Hall * hallPtr = this-> get_Town_Hall_ptr(inputID);
+
+			if (hallPtr == 0)
+			{
+				this-> hall_ptrs.push_back(new Town_Hall(inputID, Cart_Point(xcord, ycord)));
+				this-> object_ptrs.push_back(hall_ptrs.back());
+				this-> active_ptrs.push_back(hall_ptrs.back());
+			}
+			else
+			{
+				throw Invalid_Input("Town Hall of input ID already exists.");
+			}
+			break;
+		}
+		case 'm' : // MINER
+		{
+			Person * minerPtr = this-> get_Person_ptr(inputID);
+
+			if (minerPtr == 0)
+			{
+				this-> person_ptrs.push_back(new Miner(inputID, Cart_Point(xcord, ycord)));
+				this-> object_ptrs.push_back(person_ptrs.back());
+				this-> active_ptrs.push_back(person_ptrs.back());
+			}
+			else
+			{
+				throw Invalid_Input("Miner of input ID already exists.");
+			}
+			break;
+		}
+		case 's' : // SOLDIER
+		{
+			Person * soldierPtr = this-> get_Person_ptr(inputID);
+
+			if (soldierPtr == 0)
+			{
+				this-> person_ptrs.push_back(new Soldier(inputID, Cart_Point(xcord, ycord)));
+				this-> object_ptrs.push_back(person_ptrs.back());
+				this-> active_ptrs.push_back(person_ptrs.back());
+			}
+			else
+			{
+				throw Invalid_Input("Soldier of input ID already exists.");
+			}
+			break;
+		}
+		default :
+		{
+			throw Invalid_Input("Incorrect input parameter for type of new object.");
+		}
+	}
+}
