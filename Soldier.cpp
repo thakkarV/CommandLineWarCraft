@@ -20,11 +20,13 @@ Soldier::Soldier(const int inId, const Cart_Point inLoc) : Person('S', inId, inL
 	std::cout << "Soldier constructed." << std::endl;
 }
 
+// DISTRUCTOR
 Soldier::~Soldier()
 {
 	std::cout << "Soldier destructed." << std::endl;
 }
 
+// VIRTUAL PUBLIC MEMBER FUNCTION
 void Soldier::start_attack(Person * targetPtr)
 {
 	// first check if the sodier is alive or not
@@ -52,10 +54,11 @@ void Soldier::start_attack(Person * targetPtr)
 	}
 	else
 	{
-		std::cout << this->display_code << this-> get_id() << " is dead." << std::endl;
+		throw Invalid_Input("Soldier is dead.");
 	}
 }
 
+// VIRTUAL PUBLIC MEMBER FUNCTION
 bool Soldier::update()
 {
 	switch (this-> state)
@@ -88,7 +91,7 @@ bool Soldier::update()
 				if (this-> target-> is_alive())
 				{
 					// then attack the target
-					this-> target-> take_hit(this-> attack_strength);
+					this-> target-> take_hit(this-> attack_strength, this);
 					// and then print message
 					std::cout << this-> display_code << this-> get_id() << ": Clang!" << std::endl;
 					return false;
@@ -105,7 +108,7 @@ bool Soldier::update()
 			{
 				// if the target is out of range, print message, stop
 				this-> state = 's';
-				std::cout << this-> display_code << this-> get_id() << ": Target is out of range." << std::endl;
+				std::cout << this-> display_code << this-> get_id() << ": Target out of range." << std::endl;
 				return true;
 			}
 		}
@@ -117,6 +120,7 @@ bool Soldier::update()
 	}
 }
 
+// VIRTUAL PUBLIC MEMBER FUNCTION
 void Soldier::show_status()
 {
 	std::cout << "Soldier status: ";
@@ -138,5 +142,31 @@ void Soldier::show_status()
 			std::cout << "is attacking." << std::endl;
 			break;
 		}
+	}
+}
+
+// VIRTUAL PUBLIC MEMBER FUNCTION
+void Soldier::take_hit(int attack_strength, Person * attackerPtr)
+{
+	// check if the health is less than the attac strength
+	if (this-> health > attack_strength)
+	{
+		this-> health -= attack_strength;
+
+		// change the display code to lower case in case the health goes below 3
+		if (this-> health < 3)
+		{
+			this-> display_code = static_cast < char > ( (static_cast < int > (this-> display_code)) + 32);
+		}
+
+		// start attacking the enemy soldier back if not yet dead
+		this-> start_attack(attackerPtr);
+		this-> state = 'a';
+	}
+	else
+	{
+		this-> health = 0;
+		this-> state = 'x';
+		std::cout << this-> display_code << this-> get_id() << ": Arrggh!" << std::endl;
 	}
 }

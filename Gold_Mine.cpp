@@ -81,3 +81,9 @@ void Gold_Mine::show_status()
 	Game_Object::show_status();
 	std::cout << "Contains " << this-> amount << "." << std::endl;
 }
+
+// PUBLIC MEMBER FUNCTION
+double Gold_Mine::getGoldAmount()
+{
+	return (this-> amount);
+}

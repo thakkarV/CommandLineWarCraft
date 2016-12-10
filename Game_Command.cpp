@@ -34,16 +34,16 @@ void work(Model * model, View * view, int personID, int mineID, int hallID)
 	Gold_Mine * minePtr = model-> get_Gold_Mine_ptr(mineID);
 	Town_Hall * hallPtr = model-> get_Town_Hall_ptr(hallID);
 
-	if ((minerPtr != 0) && (minePtr != 0) && (hallPtr != 0))
+	if (minerPtr && minePtr && hallPtr)
 	{
 		minerPtr-> start_mining(minePtr, hallPtr);
 		// mining message will be displayed by the start_minig function in miner.cpp
 	}
-	else if (minerPtr == 0)
+	else if (!minerPtr)
 	{
 		throw Invalid_Input("Miner with entered ID does not exist.");
 	}
-	else if (minePtr == 0)
+	else if (!minePtr)
 	{
 		throw Invalid_Input("Gold mine with entered ID does not exist.");
 	}
@@ -60,7 +60,7 @@ void attack(Model * model, View * view, int soldierID, int personID)
 	Person * soldierPtr = model-> get_Person_ptr(soldierID);
 	Person * personPtr = model-> get_Person_ptr(personID);
 
-	if ((soldierPtr != 0) && (personPtr != 0))
+	if (soldierPtr && personPtr)
 	{
 		// if both ID numbers were valid then start attacking	
 		soldierPtr-> start_attack(personPtr);
@@ -80,12 +80,28 @@ void attack(Model * model, View * view, int soldierID, int personID)
 void stop(Model * model, View * view, int personID)
 {
 	// get pointer first
-	Person * personPtr = model->get_Person_ptr(personID);
+	Person * personPtr = model-> get_Person_ptr(personID);
 
-	if (personPtr != 0)
+	if (personPtr)
 	{
-		personPtr->stop();
+		personPtr-> stop();
 		// stopping message will by ouput by the stop function in person.cpp
+	}
+	else
+	{
+		throw Invalid_Input("Person with entered ID number does not exist.");
+	}
+
+	model-> display(view);
+}
+
+void inspect(Model * model, View * view, int inspectorID)
+{
+	Person * inspectorPtr = model-> get_Person_ptr(inspectorID);
+
+	if (inspectorPtr)
+	{
+		inspectorPtr-> start_inspecting(model);
 	}
 	else
 	{
@@ -98,7 +114,7 @@ void stop(Model * model, View * view, int personID)
 void go(Model * model, View * view)
 {
 	std::cout << "Advancing one tick." << std::endl;
-	bool throwaway = model-> update();
+	bool event = model-> update();
 	model-> show_status();
 	model-> display(view);
 }
@@ -106,12 +122,12 @@ void go(Model * model, View * view)
 void run(Model * model, View * view)
 {
 	std::cout << "Advancing to next event." << std::endl;
-	bool throwaway = false;
+	bool event = false;
 	int counter = 0;
 
-	while (!throwaway && counter < 5)
+	while (!event && counter < 5)
 	{
-		throwaway = model-> update();
+		event = model-> update();
 		counter++;
 	}
 

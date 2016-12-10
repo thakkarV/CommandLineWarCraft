@@ -2,7 +2,7 @@
 CC = g++
 
 # define objects to be compiled
-OBJS = main.o Cart_Point.o Cart_Vector.o Game_Object.o Game_Command.o Gold_Mine.o Person.o Miner.o Soldier.o Model.o Town_Hall.o View.o
+OBJS = main.o Cart_Point.o Cart_Vector.o Inspector.o Game_Object.o Game_Command.o Gold_Mine.o Person.o Miner.o Soldier.o Model.o Town_Hall.o View.o
 
 # Compiler flags for final compile
 CPPFLAGSFCP = -c
@@ -30,7 +30,7 @@ Game_Object.o: Game_Object.cpp Game_Object.h Cart_Point.h
 Gold_Mine.o: Gold_Mine.cpp Gold_Mine.h Game_Object.h Cart_Point.h
 	$(CC) $(CPPFLAGSFCP) Gold_Mine.cpp $(CXXFLAGS) Gold_Mine.o
 
-Person.o: Person.cpp Person.h Game_Object.h Cart_Point.h Cart_Vector.h Town_Hall.h Gold_Mine.h
+Person.o: Person.cpp Person.h View.h Game_Object.h Cart_Point.h Cart_Vector.h Town_Hall.h Gold_Mine.h
 	$(CC) $(CPPFLAGSFCP) Person.cpp $(CXXFLAGS) Person.o
 
 Miner.o: Miner.cpp Miner.h Person.h Game_Object.h Gold_Mine.h Town_Hall.h Cart_Point.h Cart_Vector.h
@@ -39,7 +39,10 @@ Miner.o: Miner.cpp Miner.h Person.h Game_Object.h Gold_Mine.h Town_Hall.h Cart_P
 Soldier.o: Soldier.cpp Soldier.h Person.h
 	$(CC) $(CPPFLAGSFCP) Soldier.cpp $(CXXFLAGS) Soldier.o
 
-Model.o: Model.cpp Model.h Input_Handling.h Game_Object.h Person.h Town_Hall.h Gold_Mine.h Miner.h View.h Soldier.h Input_Handling.h
+Inspector.o: Inspector.cpp Inspector.h Person.h Gold_Mine.h Model.h Input_Handling.h Cart_Point.h
+	$(CC) $(CPPFLAGSFCP) Inspector.cpp $(CXXFLAGS) Inspector.o
+
+Model.o: Model.cpp Model.h Inspector.h Input_Handling.h Game_Object.h Person.h Town_Hall.h Gold_Mine.h Miner.h View.h Soldier.h Input_Handling.h
 	$(CC) $(CPPFLAGSFCP) Model.cpp $(CXXFLAGS) Model.o 
 
 Town_Hall.o: Town_Hall.cpp Town_Hall.h Game_Object.h Cart_Point.h

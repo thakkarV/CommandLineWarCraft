@@ -6,6 +6,7 @@
 #include "Cart_Vector.h"
 #include "Gold_Mine.h"
 #include "Town_Hall.h"
+#include "Input_Handling.h"
 
 class Miner : public Person
 {

@@ -43,6 +43,9 @@ public:
 	// prints out the status of the gold mine object, including display_code, id_num, location,
 	// and the amount of gold. See the sample output for the format.
 
+	double getGoldAmount();
+	// getter for the private gold amount avariable, used for the inspector class
+
 private:
 	
 	double amount;

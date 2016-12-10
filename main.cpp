@@ -31,10 +31,8 @@ int main()
 
     std::string inputString; // stores the entire user input line until variables have been extracted from it
 
-// initlal greet messages
-    std::cout << "EC327: Introduction to Software Engineering" << std::endl;
-    std::cout << "Fall 2016" << std::endl;
-    std::cout << "Programming Assignment 3" << std::endl;
+// initial greet messages
+    std::cout << "EC327: Programming Assignment 4 -- Fall 2016" << std::endl;
 
 // instatiate all initial game objects and the MVC objects
     Model * model = new Model();
@@ -104,6 +102,13 @@ int main()
                     id1 = getInt(inputString);
                     checkBloatedInput(inputString);
                     stop(model, view, id1);
+                    break;
+                }
+                case 'i' : // INSPECT: input string  format "i \inspectorID"
+                {
+                    id1 = getInt(inputString);
+                    checkBloatedInput(inputString);
+                    inspect(model, view, id1);
                     break;
                 }
                 case 'g' : // GO: input string format "g"

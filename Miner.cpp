@@ -80,7 +80,7 @@ bool Miner::update()
 			std::cout << display_code << Game_Object::get_id() << ": Got " << duggold << " gold." << std::endl;
 
 			// now setup_destination to move towards the town hall
-			Person::setup_destination(this-> home-> get_location());
+			this-> setup_destination(this-> home-> get_location());
 			// and now change state to inbound
 			this-> state = 'i';
 			return true;
@@ -147,7 +147,7 @@ void Miner::show_status()
 		}
 		case 'g' : // getting gold
 		{
-			std::cout << " is getting gold from mine." << std::endl;
+			std::cout << "is getting gold from mine." << std::endl;
 			break;
 		}
 		case 'i' : // inbound
@@ -179,6 +179,6 @@ void Miner::start_mining(Gold_Mine * inputMine, Town_Hall * inputHome)
 	}
 	else
 	{
-		std::cout << this-> display_code << this-> get_id() << " is dead." << std::endl;
+		throw Invalid_Input("Miner is dead.");
 	}
 }

@@ -6,9 +6,16 @@
 #include "Game_Object.h"
 #include "Gold_Mine.h"
 #include "Town_Hall.h"
+#include "View.h"
 
 #include <iostream>
 #include <math.h> // for fabs() function
+
+class Model;
+
+extern const int VIEW_MAXSIZE;
+
+
 
 class Person : public Game_Object
 {
@@ -48,11 +55,14 @@ public:
 	bool is_alive();
 	// returns true if the state is not x, false if it is
 
-	void take_hit(int attack_strength);
+	virtual void take_hit(int attack_strength, Person * attackerPtr);
 	// decreases health of the person based on the attack level
 	
 	virtual void start_attack(Person * targetPtr);
 	// tells the person to start attacking a given target
+
+	virtual void start_inspecting(Model * model);
+	// tells the person to start inspecting
 
 protected:
 	bool update_location();
@@ -61,6 +71,9 @@ protected:
 
 	void setup_destination(const Cart_Point dest);
 	// Sets up the object to start moving to destination location
+
+	int health;
+	// stores the health of the person. default initial is 5
 
 private:
 	double speed;
@@ -71,9 +84,6 @@ private:
 
 	Cart_Vector delta;
 	// Contains the x and y amounts that the object will move on each time unit
-
-	int health;
-	// stores the health of the person. default initial is 5
 
 };
 

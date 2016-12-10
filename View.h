@@ -8,8 +8,7 @@
 #include <iostream>
 #include <iomanip> // setw() stream modifier and left flag
 
-
-const int view_maxsize = 20;
+const int VIEW_MAXSIZE = 20;
 
 class View
 {
@@ -35,7 +34,7 @@ private:
 	Cart_Point origin;
 	// origin at lower left hand corner
 
-	char grid[view_maxsize][view_maxsize][2];
+	char grid[VIEW_MAXSIZE][VIEW_MAXSIZE][2];
 	// holds al chars that make up the array
 
 	bool get_subscripts(int & ix, int & iy, Cart_Point location);

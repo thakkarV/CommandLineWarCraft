@@ -10,10 +10,12 @@
 #include "Person.h"
 #include "View.h"
 #include "Soldier.h"
+#include "Inspector.h"
 #include "Input_Handling.h"
 
 #include <iostream>
 #include <list>
+#include <deque>
 
 class Model
 {
@@ -40,6 +42,9 @@ public:
 
 	// this function makes the new object input to it when called upon by game command
 	void handleNew(char type, char inputID, double xcord, double ycord);
+
+	std::deque< Gold_Mine * > getMinesList();
+	// returns the entire list of mines
 	
 private:
 	int time;

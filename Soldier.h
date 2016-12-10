@@ -2,6 +2,7 @@
 #define SOLDIER_H
 
 #include "Person.h"
+#include "Input_Handling.h"
 
 #include <iostream>
 
@@ -23,6 +24,8 @@ public:
 	void show_status();
 	// show status for soldier, virtual in parent game object and person
 	
+	void take_hit(int attack_strength, Person * attackerPtr);
+	// makes the soldier take a hit and then attack the attacking soldier back
 
 private:
 	int attack_strength;

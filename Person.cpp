@@ -31,7 +31,7 @@ void Person::start_moving(const Cart_Point dest)
 	// first check if the miner is alive or not
 	if (this-> is_alive())
 	{
-		std::cout << "Moving " << this-> display_code <<  this-> get_id() << " to " << this-> destination << std::endl;
+		std::cout << "Moving " << this-> display_code <<  this-> get_id() << " to " << dest << std::endl;
 
 		// see if the destination is the same as the location
 		if (this-> get_location() == dest)
@@ -52,18 +52,6 @@ void Person::start_moving(const Cart_Point dest)
 	}
 }
 
-void Person::start_mining(Gold_Mine * minePtr, Town_Hall * hallPtr)
-{
-	if (this-> is_alive())
-	{
-		std::cout << "Sorry, I can't work a mine." << std::endl;
-	}
-	else
-	{
-		std::cout << this->display_code << this-> get_id() << " id dead." << std::endl;
-	}	
-}
-
 // PUBLIC MEMBER FUNCTION
 void Person::stop()
 {
@@ -72,11 +60,10 @@ void Person::stop()
 	std::cout << this-> display_code << this-> get_id() << ": Stopped." << std::endl;
 }
 
-// PUBLIC MEMBER FUNCTION
+// VIRTUAL PUBLIC MEMBER FUNCTION
 void Person::show_status()
 {
 	std::cout << this-> display_code << this-> get_id() << " at " << this-> get_location() << " ";
-	std::cout << "has health " << this-> health << " and ";
 	// now check if the person is moving
 	if (this-> state == 'm' || this-> state == 'o' || this-> state == 'i' || this-> state == 'd')
 	{
@@ -102,35 +89,73 @@ bool Person::is_alive()
 	else return true;
 }
 
-// PUBLIC MEMBER FUCTION
-void Person::take_hit(int attack_strength)
+// VIRTUAL PUBLIC MEMBER FUCTION
+void Person::take_hit(int attack_strength, Person * attackerPtr)
 {
 	// check if the health is less than the attac strength
 	if (this-> health > attack_strength)
 	{
 		this-> health -= attack_strength;
+
+		// change the display code to lower case in case the health goes below 3
+		if (this-> health < 3)
+		{
+			this-> display_code = static_cast < char > ( static_cast < int > (this-> display_code) + 32);
+		}
+
+		std::cout << this-> display_code << this-> get_id() << ": Ouch!" << std::endl;
+		// now depending upon the health, change state and output message
+	
+		// now do the calculations required for running away, first the direction vector and magnitude scaling
+		Cart_Point attackerLocation = attackerPtr-> get_location();
+		Cart_Vector runningDirection = (this-> location - attackerLocation) * 3.5;
+
+		// now the location to ron to
+		Cart_Point runningLocation = Cart_Point(attackerLocation.x + runningDirection.x, attackerLocation.y + runningDirection.y);
+
+		// now bounds check with respect to the edges of the grid
+		if (runningLocation.x > VIEW_MAXSIZE)
+			runningLocation.x = VIEW_MAXSIZE;
+
+		if (runningLocation.y > VIEW_MAXSIZE)
+			runningLocation.y = VIEW_MAXSIZE;
+
+		if (runningLocation.x < 0)
+			runningLocation.x = 0;
+
+		if (runningLocation.y < 0)
+			runningLocation.y = 0;
+
+		// setup destination
+		this-> setup_destination(runningLocation);
+
+		// now MOVE!
+		this-> state = 'm';
 	}
 	else
 	{
 		this-> health = 0;
-	}
-
-	// now depending upon the health, change state and output message
-	if (this-> health <= 0)
-	{
 		this-> state = 'x';
 		std::cout << this-> display_code << this-> get_id() << ": Arrggh!" << std::endl;
 	}
-	else
-	{
-		std::cout << this-> display_code << this-> get_id() << ": Ouch!" << std::endl;
-	}
 }
 
-// PUBLIC MEMBER FUNCITON
+// VIRTUAL PUBLIC MEMBER FUNCTION
+void Person::start_mining(Gold_Mine * minePtr, Town_Hall * hallPtr)
+{
+	std::cout << "Sorry, I can't work a mine." << std::endl;
+}
+
+// VIRTUAL PUBLIC MEMBER FUNCITON
 void Person::start_attack(Person * tagetPtr)
 {
 	std::cout << "I can't attack." << std::endl;
+}
+
+// VIRTUAL PUBLIC MEMBER FUNCTION
+void Person::start_inspecting(Model * model)
+{
+	std::cout << "Sorry, I cant't inspect." << std::endl;
 }
 
 // PROTECTED MEMBER FUNCTION

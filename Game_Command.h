@@ -17,7 +17,8 @@ void makeNew(Model * model, View * view, char type, char inputID, double xcord, 
 void move(Model * model, View * view, int personID, double xcord, double ycord);
 void work(Model * model, View * view, int personID, int mineID, int hallID);
 void attack(Model * model, View * view, int soldierID, int personID);
-void stop(Model * model, View * view, int id);
+void stop(Model * model, View * view, int personID);
+void inspect(Model * model, View * view, int personID);
 void go(Model * model, View * view);
 void run(Model * model, View * view);
 void list(Model * model);
