@@ -2,13 +2,11 @@
 #define VIEW_H 
 
 #include "Cart_Point.h"
-#include "Cart_Vector.h"
 #include "Game_Object.h"
 
-#include <iostream>
-#include <iomanip> // setw() stream modifier and left flag
 
 const int VIEW_MAXSIZE = 20;
+
 
 class View
 {

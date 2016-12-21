@@ -1,13 +1,16 @@
 // Class Miner definitions
 // defines the data and behavior of a miner object, a child of a person object, a child of a game object
-#include <iostream>
 #include "Miner.h"
-#include "Person.h"
 #include "Cart_Point.h"
 #include "Cart_Vector.h"
-#include "Game_Object.h"
+#include "Person.h"
 #include "Gold_Mine.h"
 #include "Town_Hall.h"
+#include "Model.h"
+#include "Input_Handling.h"
+
+#include <iostream>
+#include <fstream>
 
 // CONSTRUCTOR: DEFAULT
 Miner::Miner() : Person('M')
@@ -21,6 +24,16 @@ Miner::Miner() : Person('M')
 
 // CONSTRUCTOR: INPUT BASED
 Miner::Miner(const int in_id, const Cart_Point in_loc) : Person('M', in_id, in_loc)
+{
+	this-> amount = 0;
+	this-> mine = 0; // NULL pointer
+	this-> home = 0; // NULL pointer
+	this-> state = 's';
+	std::cout << "Miner constructed." << std::endl;
+}
+
+// CONSTRUCTOR: INPUT BASED
+Miner::Miner(const char inputCode, const int in_id, const Cart_Point in_loc) : Person(inputCode, in_id, in_loc)
 {
 	this-> amount = 0;
 	this-> mine = 0; // NULL pointer
@@ -180,5 +193,47 @@ void Miner::start_mining(Gold_Mine * inputMine, Town_Hall * inputHome)
 	else
 	{
 		throw Invalid_Input("Miner is dead.");
+	}
+}
+
+// VIRTUAL PUBLIC MEMBER FUNCTION
+void Miner::save(std::ofstream & file)
+{
+	this-> Person::save(file);
+
+	file << this-> amount << std::endl;
+
+	if (this-> mine)
+	{
+		file << this-> mine-> get_id() << std::endl;
+		file << this-> home-> get_id() << std::endl;
+	}
+	else
+	{
+		file << -1 << std::endl << -1 << std::endl;
+	}
+}
+
+// VIRTUAL PUBLIC MEMBER FUNCTION
+void Miner::restore(std::ifstream & file, Model * model)
+{
+	this-> Person::restore(file, model);
+
+	file >> this-> amount;
+
+	int mineID;
+	file >> mineID;
+	int hallID;
+	file >> hallID;
+
+	if (mineID != -1)
+	{
+		this-> mine = model-> get_Gold_Mine_ptr(mineID);
+		this-> home = model-> get_Town_Hall_ptr(hallID);
+	}
+	else
+	{
+		this-> mine = 0;
+		this-> home = 0;
 	}
 }

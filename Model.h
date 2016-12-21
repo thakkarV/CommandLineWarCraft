@@ -1,19 +1,14 @@
 #ifndef MODEL_H
 #define MODEL_H 
 
-#include "Cart_Point.h"
-#include "Cart_Vector.h"
+#include "View.h"
 #include "Game_Object.h"
+#include "Person.h"
 #include "Gold_Mine.h"
 #include "Town_Hall.h"
-#include "Miner.h"
-#include "Person.h"
-#include "View.h"
-#include "Soldier.h"
-#include "Inspector.h"
-#include "Input_Handling.h"
 
 #include <iostream>
+#include <fstream>
 #include <list>
 #include <deque>
 
@@ -45,6 +40,12 @@ public:
 
 	std::deque< Gold_Mine * > getMinesList();
 	// returns the entire list of mines
+
+	void save(std::ofstream & file);
+	// save all object states to file
+
+	void restore(std::ifstream & file);
+	// load all objects states from file
 	
 private:
 	int time;

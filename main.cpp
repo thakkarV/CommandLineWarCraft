@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "Cart_Vector.h"
 #include "Cart_Point.h"
 #include "Game_Object.h"
@@ -11,8 +9,9 @@
 #include "Model.h"
 #include "View.h"
 #include "Input_Handling.h"
+
 #include <string>
-#include <sstream>
+#include <iostream>
 
 //Students need to build on this
 int main()
@@ -109,6 +108,18 @@ int main()
                     id1 = getInt(inputString);
                     checkBloatedInput(inputString);
                     inspect(model, view, id1);
+                    break;
+                }
+                case 'S' : // SAVE: input string format "S \fileName"
+                {
+                    std::string fileName = getFilename(inputString);
+                    save(model, view, fileName);
+                    break;
+                }
+                case 'R' : // RESTORE:  input string format "R \fileName"
+                {
+                    std::string fileName = getFilename(inputString);
+                    restore(model, view, fileName);
                     break;
                 }
                 case 'g' : // GO: input string format "g"

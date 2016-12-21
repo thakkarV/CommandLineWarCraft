@@ -6,16 +6,8 @@
 #include "Game_Object.h"
 #include "Gold_Mine.h"
 #include "Town_Hall.h"
-#include "View.h"
 
-#include <iostream>
-#include <math.h> // for fabs() function
-
-class Model;
-
-extern const int VIEW_MAXSIZE;
-
-
+#include <fstream>
 
 class Person : public Game_Object
 {
@@ -63,6 +55,13 @@ public:
 
 	virtual void start_inspecting(Model * model);
 	// tells the person to start inspecting
+
+	void save(std::ofstream & file);
+	// save state to file
+
+	void restore(std::ifstream & file, Model * model);
+	// load state from file
+
 
 protected:
 	bool update_location();

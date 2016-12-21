@@ -1,4 +1,13 @@
 #include "Person.h"
+#include "Game_Object.h"
+#include "Cart_Point.h"
+#include "Cart_Vector.h"
+#include "Model.h"
+#include "View.h"
+
+#include <iostream>
+#include <math.h>
+#include <fstream>
 
 // CONSTRUCTOR: DEFAULT
 Person::Person() {}
@@ -68,7 +77,8 @@ void Person::show_status()
 	if (this-> state == 'm' || this-> state == 'o' || this-> state == 'i' || this-> state == 'd')
 	{
 		std::cout << "moving at speed of " << this-> speed << " towards "
-				  << this-> destination << " at each step of " << this-> delta;
+				  << this-> destination << " at each step of " << this-> delta
+				  << " with health of " << this-> health;
 	}
 	// if dieded, print appropriate message
 	else if (this-> state == 'x')
@@ -104,6 +114,7 @@ void Person::take_hit(int attack_strength, Person * attackerPtr)
 		}
 
 		std::cout << this-> display_code << this-> get_id() << ": Ouch!" << std::endl;
+		std::cout << this-> display_code << this-> get_id() << ": I don't wanna fight!" << std::endl;
 		// now depending upon the health, change state and output message
 	
 		// now do the calculations required for running away, first the direction vector and magnitude scaling
@@ -136,7 +147,7 @@ void Person::take_hit(int attack_strength, Person * attackerPtr)
 	{
 		this-> health = 0;
 		this-> state = 'x';
-		std::cout << this-> display_code << this-> get_id() << ": Arrggh!" << std::endl;
+		std::cout << this-> display_code << this-> get_id() << ": Ahhhh, I am dying." << std::endl;
 	}
 }
 
@@ -168,7 +179,7 @@ bool Person::update_location()
 
 	if ( (xdiff <= fabs(this-> delta.x) && ydiff <= fabs(this-> delta.y)) || this-> location == this-> destination)
 	{
-		// if within one step of destinsation, set current location to destination and true for reaching
+		// if within one step of destination, set current location to destination and true for reaching
 		this-> location = this-> destination;
 		std::cout << this-> display_code << this-> get_id() << ": I’m there!" << std::endl;
 		this-> delta = Cart_Vector(0, 0);
@@ -191,4 +202,28 @@ void Person::setup_destination(const Cart_Point dest)
 
 	this-> delta = ( (this-> destination - this-> location) * (speed / cart_distance(this-> destination, this-> location)) );
 	// also caculates the delta value and changes the data member in person object
+}
+
+// PURE VIRTUAL PUBLIC MEMBER FUNCTION
+void Person::save(std::ofstream & file)
+{
+	file << this-> health << std::endl;
+	file << this-> speed << std::endl;
+	file << this-> destination.x << std::endl;
+	file << this-> destination.y << std::endl;
+	file << this-> delta.x << std::endl;
+	file << this-> delta.y << std::endl;
+	file << this-> state << std::endl;
+}
+
+// PURE VIRTUAL PUBLIC MEMBER FUNCTION
+void Person::restore(std::ifstream & file, Model * model)
+{
+	file >> this-> health;
+	file >> this-> speed;
+	file >> this-> destination.x;
+	file >> this-> destination.y;
+	file >> this-> delta.x;
+	file >> this-> delta.y;
+	file >> this-> state;
 }

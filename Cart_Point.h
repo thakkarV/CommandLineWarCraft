@@ -2,8 +2,8 @@
 #define CART_POINT_H
 
 #include "Cart_Vector.h"
+
 #include <iostream>
-#include <cmath>
 
 // stores the x and y cartesian coordinates of all game objects
 

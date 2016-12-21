@@ -1,4 +1,9 @@
 #include "Game_Object.h"
+#include "Cart_Point.h"
+#include "Model.h"
+
+#include <iostream>
+#include <fstream>
 
 Game_Object::Game_Object() {}
 
@@ -59,4 +64,10 @@ bool Game_Object::is_alive()
 	// this virtual will always return true
 	// subdefintions is each derivation of person class
 	return true;
+}
+
+// PUBLIC MEMBER FUNCTION
+char Game_Object::getDisplayCode()
+{
+	return this-> display_code;
 }

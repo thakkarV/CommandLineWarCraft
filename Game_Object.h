@@ -2,7 +2,10 @@
 #define GAME_OBJECT_H
 
 #include "Cart_Point.h"
-#include <iostream>
+
+class Model;
+
+#include <fstream>
 
 class Game_Object
 {
@@ -40,6 +43,15 @@ public:
 	virtual bool is_alive();
 	// always returns true from game object if derived definiton not specified
 
+	virtual void save(std::ofstream & file) = 0;
+	// saves the object state to the file
+
+	virtual void restore(std::ifstream & file, Model * model) = 0;
+	// restores the onejct state from file
+
+	char getDisplayCode();
+	// returns the private display code for cataloging during save command
+	
 protected:
 	// locatin of the derived object
 	Cart_Point location;

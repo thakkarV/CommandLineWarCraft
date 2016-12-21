@@ -1,4 +1,9 @@
 #include "View.h"
+#include "Cart_Point.h"
+#include "Game_Object.h"
+
+#include <iostream>
+#include <iomanip> // setw() stream modifier and left flag
 
 // CONTRUCTOR: DEFAULT
 View::View()

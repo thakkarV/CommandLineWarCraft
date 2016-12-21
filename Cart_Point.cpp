@@ -1,4 +1,8 @@
 #include "Cart_Point.h"
+#include "Cart_Vector.h"
+
+#include <iostream>
+#include <cmath>
 // Class Cart_Point definitions
 // stores the x and y cartesian coordinates of all game objects
 

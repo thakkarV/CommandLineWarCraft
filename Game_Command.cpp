@@ -1,11 +1,26 @@
 #include "Game_Command.h"
+#include "Model.h"
+#include "View.h"
+#include "Cart_Point.h"
+#include "Person.h"
+#include "Miner.h"
+#include "Gold_Mine.h"
+#include "Town_Hall.h"
+#include "Input_Handling.h"
 
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+
+// makes a new game object on the fly
 void makeNew(Model * model, View * view, char type, char inputID, double xcord, double ycord)
 {
 	model-> handleNew(type, inputID, xcord, ycord);
 	model-> display(view);
 }
 
+// tells a person to move to input coordinates
 void move(Model * model, View * view, int personID, double xcord, double ycord)
 {
 	// first try to get the pointer to the person we are trying to move
@@ -26,6 +41,7 @@ void move(Model * model, View * view, int personID, double xcord, double ycord)
 	model-> display(view);
 }
 
+// tells a miner to start mining form input mine and submitting at input hall
 void work(Model * model, View * view, int personID, int mineID, int hallID)
 {
 	// first get all the three pointers from the model
@@ -55,6 +71,7 @@ void work(Model * model, View * view, int personID, int mineID, int hallID)
     model-> display(view);
 }
 
+// tells a soldier to attack the input person
 void attack(Model * model, View * view, int soldierID, int personID)
 {
 	Person * soldierPtr = model-> get_Person_ptr(soldierID);
@@ -77,6 +94,7 @@ void attack(Model * model, View * view, int soldierID, int personID)
 	model-> display(view);
 }
 
+// tells a person to stop whatever its doing
 void stop(Model * model, View * view, int personID)
 {
 	// get pointer first
@@ -95,6 +113,7 @@ void stop(Model * model, View * view, int personID)
 	model-> display(view);
 }
 
+// tells an inspector to start inspecting mines
 void inspect(Model * model, View * view, int inspectorID)
 {
 	Person * inspectorPtr = model-> get_Person_ptr(inspectorID);
@@ -111,6 +130,7 @@ void inspect(Model * model, View * view, int inspectorID)
 	model-> display(view);
 }
 
+// model advance one time tick
 void go(Model * model, View * view)
 {
 	std::cout << "Advancing one tick." << std::endl;
@@ -119,6 +139,7 @@ void go(Model * model, View * view)
 	model-> display(view);
 }
 
+// modle advance either 5 time ticks or until a significant event, whichever is earlier
 void run(Model * model, View * view)
 {
 	std::cout << "Advancing to next event." << std::endl;
@@ -135,11 +156,13 @@ void run(Model * model, View * view)
 	model-> display(view);
 }
 
+// list the status of all game objects
 void list(Model * model)
 {
 	model-> show_status();
 }
 
+// terminate main and delete all objects from memory
 bool quitGame(Model * model)
 {
 	std::cout << "Terminating program." << std::endl;
@@ -147,6 +170,7 @@ bool quitGame(Model * model)
 	return false;
 }
 
+// get the entire command input from the user as a string and extract command code
 void getInputStream(char & cmdCode, std::string & inputString)
 {
 	// this funciton is the first one called by the  main to get the entire user input command as a string
@@ -166,6 +190,7 @@ void getInputStream(char & cmdCode, std::string & inputString)
 	}
 }
 
+// extract next char from input command string
 char getChar(std::string & inputString)
 {
 	// first convert the string to an input stream
@@ -184,6 +209,7 @@ char getChar(std::string & inputString)
 	}
 }
 
+// extract next int form the inpt command string
 int getInt(std::string & inputString)
 {
 	// first convert the string to an input stream
@@ -206,6 +232,7 @@ int getInt(std::string & inputString)
 	}
 }
 
+// extract next duoble from input command string
 double getDouble(std::string & inputString)
 {
 	// first convert the string to an input stream
@@ -224,6 +251,35 @@ double getDouble(std::string & inputString)
 	}
 }
 
+// extract file name for save or load form command string
+std::string getFilename(std::string & inputString)
+{
+	char expectedSpace = inputString.at(0);
+
+	if (expectedSpace != ' ')
+	{
+		throw Invalid_Input("Invalid input format for command. Must have a space after ");
+	}
+
+	int firstChar = inputString.find_first_not_of(" ");
+	std::string fileName = inputString.substr(firstChar, std::string::npos);
+	inputString.clear();
+
+	// there could be more spaces in the file name as well and no file extension
+	if (fileName.find(" ") != std::string::npos) 
+	{
+		throw Invalid_Input("Filename must not contain any spaces.");
+	}
+
+	if (fileName.find(".") == std::string::npos)
+	{
+		throw Invalid_Input("Filename must have an extension.");
+	}
+
+	return fileName;
+}
+
+// delete the last extraction from the command string
 void cleanInputString(std::string & inputString)
 {
 	// to change the inputString appropriately to drop the first parameter, 
@@ -256,6 +312,7 @@ void cleanInputString(std::string & inputString)
 	}
 }
 
+// check for redundant input parameters after extracting all required inputs from command string
 void checkBloatedInput(std::string & inputString)
 {
 	// this function serves the sole purpose of throwing an exception
@@ -265,5 +322,49 @@ void checkBloatedInput(std::string & inputString)
 	if (inputString.find_first_not_of(" ") != std::string::npos)
 	{
 		throw Invalid_Input("More input parameters than expected.");
+	}
+}
+
+// save game state to a file of user input name
+void save(Model * model, View * view, std::string fileName)
+{
+	std::ofstream saveStream;
+	saveStream.open(fileName.c_str());
+
+	if (saveStream.is_open())
+	{
+		model-> save(saveStream);
+
+		saveStream.close();
+
+		std::cout << "Epic Game Saved!" << std::endl;
+
+		model->display(view);
+	}
+	else
+	{
+		throw Invalid_Input("Could not open file to save to.");
+	}
+ }
+
+// load game state from a fiel of user input name
+void restore(Model * model, View * view, std::string fileName)
+{
+	std::ifstream loadStream;
+	loadStream.open(fileName.c_str());
+
+	if (loadStream.is_open())
+	{
+		std::cout << "All objects are destroyed on DOOMS DAY!!" << std::endl;
+
+		model-> restore(loadStream);
+
+		loadStream.close();
+
+		model->display(view);
+	}	
+	else
+	{
+		throw Invalid_Input("No file of input name exists to load from.");
 	}
 }

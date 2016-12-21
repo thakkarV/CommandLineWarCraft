@@ -1,4 +1,15 @@
 #include "Inspector.h"
+#include "Model.h"
+#include "Cart_Point.h"
+#include "Cart_Vector.h"
+#include "Person.h"
+#include "Input_Handling.h"
+
+#include <math.h>
+#include <fstream>
+#include <iostream>
+#include <deque>
+#include <list>
 
 // CONSTRUCTOR: DEFUALT
 Inspector::Inspector() : Person('I')
@@ -8,6 +19,12 @@ Inspector::Inspector() : Person('I')
 
 // CONSTRUCTOR: INPUT BASED
 Inspector::Inspector(const int inId, const Cart_Point inLoc) : Person('I', inId, inLoc)
+{
+	this-> state = 's';
+}
+
+// CONSTRUCTOR: INPUT BASED
+Inspector::Inspector(const char inputCode, const int inId, const Cart_Point inLoc) : Person(inputCode, inId, inLoc)
 {
 	this-> state = 's';
 }
@@ -53,7 +70,7 @@ bool Inspector::update()
 				return false;
 			}
 		}
-		case 'g' : // OUTBOUND INSPECT : forward pass sinspection state
+		case 'g' : // OUTBOUND INSPECT : forward pass inspection state
 		{
 			// first report on the mine
 			double mineAmount = this-> destMinePtr-> getGoldAmount();
@@ -69,8 +86,8 @@ bool Inspector::update()
 				// if there are still more mines left for outbound inspection, then get the closest mine in queue
 				Gold_Mine * destMinePtr = findClosestMine(this-> inspectionQueue);
 
-				// push the closest mine onto the order of inspection stack
-				this-> inspectionOrder.push(destMinePtr);
+				// push the closest mine onto the order of inspection list
+				this-> inspectionOrder.push_back(destMinePtr);
 
 				// set destination for the next mine of inspection
 				this-> setup_destination(destMinePtr-> get_location());
@@ -84,11 +101,11 @@ bool Inspector::update()
 				// if there are not more mines left for outboud inspection then start reverse inspection
 				// first we delete the last gold mine pointer we just put in since we are already there
 				// and  also the last value within the gold amount vector
-				this-> inspectionOrder.pop();
+				this-> inspectionOrder.pop_back();
 				this-> forwardPassGold.pop_back();
 
 				// then get the pointer of the first  mine to reverse inspect
-				this-> destMinePtr = this-> inspectionOrder.top();
+				this-> destMinePtr = this-> inspectionOrder.back();
 
 				// setup destination to the reverse mine
 				this-> setup_destination(this-> destMinePtr-> get_location());
@@ -116,17 +133,17 @@ bool Inspector::update()
 
 			// now display the delta of the amount
 			double deltaGold = forwardPassGold.back() - updatedAmount;
-			std::cout << "Gold mine " << destMinePtr-> get_id() << " has lost " << deltaGold << " gold." << std::endl;
+			std::cout << "Amount of gold removed from mine is " << deltaGold << " gold." << std::endl;
 
 			// delete extracted pointer and delete the last amount in the amount deque
-			this-> inspectionOrder.pop();
+			this-> inspectionOrder.pop_back();
 			this-> forwardPassGold.pop_back();
 
 			// check if there are more mines left to reverse traverse
 			if (this-> inspectionOrder.size())
 			{
 				// get the pointer of the next mine to reverse inspect
-				this-> destMinePtr = this-> inspectionOrder.top();
+				this-> destMinePtr = this-> inspectionOrder.back();
 
 				// setup destination to the reverse mine
 				this-> setup_destination(destMinePtr-> get_location());
@@ -136,10 +153,10 @@ bool Inspector::update()
 			}
 			else
 			{
-				std::cout << this-> display_code << this-> get_id() << ": Finished inspection. Waiting for orders." << std::endl;
-				this-> state = 's';
+				std::cout << this-> display_code << this-> get_id() << ": Finished inspection. Returning to starting point." << std::endl;
+				this-> setup_destination(startLocation);
+				this-> state = 'm';
 			}
-			
 		}
 		case 'x' : // DIEDED
 		{
@@ -190,14 +207,15 @@ void Inspector::start_inspecting(Model * model)
 	{
 		std::cout << this-> display_code << this-> get_id() << ": starting to inspect." << std::endl;
 
-		// first we clear all the lists and stacks for inspection in case of a command interrupt
+		// first we clear all the lists and queues for inspection in case of a command interrupt
 		this-> inspectionQueue.clear();
-		std::stack< Gold_Mine * > emptyStack;
-		std::swap(this-> inspectionOrder, emptyStack);
+		this-> inspectionOrder.clear();
 		this-> forwardPassGold.clear();
 
-		// first get the list of mines to be inspected
+
+		// first get the list of mines to be inspected and store current location into startLocation
 		this-> inspectionQueue = model-> getMinesList();
+		this-> startLocation = this-> location;
 
 		// check for empty mine list
 		if (inspectionQueue.size() == 0)
@@ -212,7 +230,7 @@ void Inspector::start_inspecting(Model * model)
 		// then setup destination to that mine and change state to outbound
 		Cart_Point destMineLocation = destMinePtr-> get_location();
 		this-> setup_destination(destMineLocation);
-		this-> inspectionOrder.push(destMinePtr);
+		this-> inspectionOrder.push_back(destMinePtr);
 		this-> state = 'o';
 	}
 	else
@@ -245,4 +263,101 @@ Gold_Mine * Inspector::findClosestMine(std::deque< Gold_Mine * > inspectionQueue
 	this-> inspectionQueue.erase(closestMineItr);
 
 	return closestMinePtr;
+}
+
+// VIRTUAL PUBLIC MEMBER FUNCTION
+void Inspector::save(std::ofstream & file)
+{
+	this-> Person::save(file);
+
+	file << this-> startLocation.x << std::endl;
+	file << this-> startLocation.y << std::endl;
+
+	// first save the ID of the current destination mine
+	if (this-> destMinePtr)
+	{
+		file << this-> destMinePtr-> get_id() << std::endl;
+	}
+	else
+	{
+		file << -1 << std::endl;
+	}
+	
+	// first save the whole inspection queue
+	file << this-> inspectionQueue.size() << std::endl;
+	for (inspectionQueueItr = inspectionQueue.begin(); inspectionQueueItr != inspectionQueue.end(); inspectionQueueItr++)
+	{
+		file << (*inspectionQueueItr)-> get_id() << std::endl;
+	}
+
+	// now save the whole inspectionOrder list
+	file << this-> inspectionOrder.size() << std::endl;
+	for (inspectionOrderItr = inspectionOrder.begin(); inspectionOrderItr != inspectionOrder.end(); inspectionOrderItr++)
+	{
+		file << (*inspectionOrderItr)-> get_id() << std::endl;
+	}
+
+	// now save the forwardPassGold vector
+	file << this-> forwardPassGold.size() << std::endl;
+	for (forwardPassGoldItr = forwardPassGold.begin(); forwardPassGoldItr != forwardPassGold.end(); forwardPassGoldItr++)
+	{
+		file << (*forwardPassGoldItr) << std::endl;
+	}
+}
+
+// VIRTUAL PUBLIC MEMBER FUNCTION
+void Inspector::restore(std::ifstream & file, Model * model)
+{
+	// first reset all three containers
+	this-> inspectionQueue.clear();
+	this-> inspectionOrder.clear();
+	this-> forwardPassGold.clear();
+
+	// now start resore
+	this-> Person::restore(file, model);
+
+	file >> this-> startLocation.x;
+	file >> this-> startLocation.y;
+
+	// first desination mine
+	int destMineID;
+	file >> destMineID;
+
+	if (destMineID == -1)
+	{
+		this-> destMinePtr = 0;
+	}
+	else
+	{
+		this-> destMinePtr = model-> get_Gold_Mine_ptr(destMineID);
+	}
+
+	// restore the deque first
+	int queueSize;
+	file >> queueSize;
+	int mineID;
+	for (int i = 0; i < queueSize; i++)
+	{
+		file >> mineID;
+		this-> inspectionQueue.push_back(model-> get_Gold_Mine_ptr(mineID));
+	}
+
+	// restore the list next
+	int listSize;
+	file >> listSize;
+	for (int i = 0; i < listSize; i++)
+	{
+		file >> mineID;
+		this-> inspectionOrder.push_back(model-> get_Gold_Mine_ptr(mineID));
+	}
+
+	// restore the vector last
+	int vectorSize;
+	file >> vectorSize;
+	double gold;
+	for (int i = 0; i < vectorSize; i++)
+	{
+		file >> gold;
+		this-> forwardPassGold.push_back(gold);
+	}
 }

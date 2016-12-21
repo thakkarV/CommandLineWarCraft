@@ -1,17 +1,16 @@
 #ifndef INSPECTOR_H
 #define INSPECTOR_H
 
-#include "Cart_Point.h"
-#include "Person.h"
-#include "Gold_Mine.h"
 #include "Model.h"
-#include "Input_Handling.h"
+#include "Cart_Point.h"
+#include "Cart_Vector.h"
+#include "Game_Object.h"
+#include "Person.h"
 
-#include <stack>
 #include <list>
 #include <deque>
 #include <iostream>
-#include <math.h> // abs
+#include <fstream>
 
 class Inspector : public Person
 {
@@ -19,6 +18,8 @@ public:
 	Inspector();
 
 	Inspector(const int inId, const Cart_Point inLoc);
+
+	Inspector(const char inputCode, const int inId, const Cart_Point inLoc);
 
 	~Inspector();
 
@@ -31,7 +32,16 @@ public:
 	void start_inspecting(Model * model);
 	// copies over the model's mine_ptrs into this inspector's inspectionQueue list
 
+	void save(std::ofstream & file);
+	// save state to file
+
+	void restore(std::ifstream & file, Model * model);
+	// load state from file
+
 private:
+
+	Cart_Point startLocation;
+	// stores the starting point of an inspection
 
 	Gold_Mine * destMinePtr;
 	// stores the pointer to the mine being currently headed towards or inspected
@@ -47,7 +57,8 @@ private:
 	// list does not allow at function  random access, which is what we need here
 
 
-	std::stack < Gold_Mine * > inspectionOrder;
+	std::list< Gold_Mine * > inspectionOrder;
+	std::list< Gold_Mine * >::iterator inspectionOrderItr;
 	// this stack stores the pointers of the already inspected mines in the corrrect inspection order
 	// the mines need to be traced back in the order that is reverse of the inspection order
 

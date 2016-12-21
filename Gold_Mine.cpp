@@ -1,4 +1,9 @@
 #include "Gold_Mine.h"
+#include "Game_Object.h"
+#include "Model.h"
+
+#include <iostream>
+#include <fstream>
 
 // CONSTRUCTOR: DEFAULT
 Gold_Mine::Gold_Mine() : Game_Object('G', 0, Cart_Point())
@@ -10,9 +15,17 @@ Gold_Mine::Gold_Mine() : Game_Object('G', 0, Cart_Point())
 }
 
 // CONSTRUCTOR: INPUT BASED
-Gold_Mine::Gold_Mine(int inputId, const Cart_Point inputLoc) : Game_Object('G', inputId, inputLoc)
+Gold_Mine::Gold_Mine(const int inputId, const Cart_Point inputLoc) : Game_Object('G', inputId, inputLoc)
 {
 	// make the game object based on the input parameters
+	this-> state = 'f';
+	this-> amount = 100;
+	std::cout << "Gold_Mine constructed." << std::endl;
+}
+
+// CONSTRUCTOR: INPUT BASED
+Gold_Mine::Gold_Mine(const char inputCode, const int inputId, const Cart_Point inputLoc)  : Game_Object(inputCode, inputId, inputLoc)
+{
 	this-> state = 'f';
 	this-> amount = 100;
 	std::cout << "Gold_Mine constructed." << std::endl;
@@ -86,4 +99,19 @@ void Gold_Mine::show_status()
 double Gold_Mine::getGoldAmount()
 {
 	return (this-> amount);
+}
+
+// PURE VIRTUAL PUBLIC MEMBER FUNCTION
+void Gold_Mine::save(std::ofstream & file)
+{
+	file << this-> amount << std::endl;
+	file << this-> state << std::endl;
+}
+
+
+// PURE VIRTUAL PUBLIC MEMBER FUNCTION
+void Gold_Mine::restore(std::ifstream & file, Model * model)
+{
+	file >> this-> amount;
+	file >> this-> state;
 }

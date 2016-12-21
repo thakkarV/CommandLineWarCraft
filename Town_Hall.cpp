@@ -1,4 +1,10 @@
 #include "Town_Hall.h"
+#include "Game_Object.h"
+#include "Cart_Point.h"
+#include "Model.h"
+
+#include <iostream>
+#include <fstream>
 
 // CONSTRUCTOR: DEFAULT
 Town_Hall::Town_Hall() : Game_Object('t', 0, Cart_Point())
@@ -10,6 +16,14 @@ Town_Hall::Town_Hall() : Game_Object('t', 0, Cart_Point())
 
 // CONSTRUCTOR: INPUT BASED
 Town_Hall::Town_Hall(const int inputId, const Cart_Point inputLoc) : Game_Object('t', inputId, inputLoc)
+{
+	this-> state = 'o';
+	this-> amount = 0;
+	std::cout << "Town_Hall constructed." << std::endl;
+}
+
+// CONSTRUCTOR: INPUT BASED
+Town_Hall::Town_Hall(const char inputCode, const int inputId, const Cart_Point inputLoc) : Game_Object(inputCode, inputId, inputLoc)
 {
 	this-> state = 'o';
 	this-> amount = 0;
@@ -57,4 +71,18 @@ void Town_Hall::show_status()
 	{
 		std::cout << "Upgraded." << std::endl; 
 	}
+}
+
+// PURE IRTUAL PUBLIC MEMBER FUNCTION
+void Town_Hall::save(std::ofstream & file)
+{
+	file << this-> amount << std::endl;
+	file << this-> state << std::endl;
+}
+
+// PURE VIRTUAL PUBLIC MEMBER FUNCTION
+void Town_Hall::restore(std::ifstream & file, Model * model)
+{
+	file >> this-> amount;
+	file >> this-> state;
 }

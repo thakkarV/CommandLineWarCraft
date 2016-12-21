@@ -4,7 +4,7 @@
 #include "Cart_Point.h"
 #include "Game_Object.h"
 
-#include <iostream>
+#include <fstream>
 
 class Town_Hall : public Game_Object
 {
@@ -13,6 +13,9 @@ public:
 	// CONSTRUCTOR: DEFAULT
 
 	Town_Hall(const int inputId, const Cart_Point inputLoc);
+	// CONSTRUCTOR: INPUT BASED
+
+	Town_Hall(const char inputCode, const int inputId, const Cart_Point inputLoc);
 	// CONSTRUCTOR: INPUT BASED
 
 	~Town_Hall();
@@ -34,6 +37,12 @@ public:
 	// only returns true the first time the town hall gets upgraded. False afterwards.
 
 	void show_status(); // virtual member
+
+	void save(std::ofstream & file);
+	// save state to file
+
+	void restore(std::ifstream & file, Model * model);
+	// load state from file
 
 private:
 

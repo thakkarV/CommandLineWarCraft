@@ -1,12 +1,13 @@
 #ifndef MINER_H
 #define MINER_H
 
-#include "Person.h"
 #include "Cart_Point.h"
-#include "Cart_Vector.h"
+#include "Person.h"
 #include "Gold_Mine.h"
 #include "Town_Hall.h"
-#include "Input_Handling.h"
+
+#include <iostream>
+#include <fstream>
 
 class Miner : public Person
 {
@@ -20,6 +21,9 @@ public:
 	Miner(const int in_id, const Cart_Point in_loc);
 	// input based constructor that invokes the corresponding input based constructor of parent Person
 	// also initialises the amount to 0 and outputs message "Miner constructed."
+
+	Miner(const char inputCode, const int in_id, const Cart_Point in_loc);
+
 
 	~Miner();
 	
@@ -42,6 +46,9 @@ public:
 	/* NOTE:
 	 |  get_id is defined in Game_Objectc.pp
 	 */
+	void save(std::ofstream & file);
+
+	void restore(std::ifstream & file, Model * model);
 
 	void show_status();
 

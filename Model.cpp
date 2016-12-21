@@ -1,4 +1,18 @@
 #include "Model.h"
+#include "View.h"
+#include "Game_Object.h"
+#include "Person.h"
+#include "Gold_Mine.h"
+#include "Town_Hall.h"
+#include "Miner.h"
+#include "Soldier.h"
+#include "Inspector.h"
+#include "Cart_Point.h"
+#include "Game_Command.h"
+#include "Input_Handling.h"
+
+#include <list>
+#include <deque>
 
 // CONSTRUCTOR: DEFAULT
 Model::Model()
@@ -117,11 +131,8 @@ bool Model::update()
 		{
 			events++;
 		}
-	}
 
-	// now see if the object is still alive after the update
-	for (active_itr = active_ptrs.begin(); active_itr != active_ptrs.end(); active_itr++)
-	{
+		// see if the object is still alive after the update
 		if (!(*active_itr)->is_alive()) // object is dead
 		{
 			active_itr = active_ptrs.erase(active_itr);
@@ -183,8 +194,7 @@ void Model::handleNew(char type, char inputID, double xcord, double ycord)
 			}
 			else
 			{
-				// otherwise throw an exception
-				throw Invalid_Input("Gold Mine of input ID already exists.");	
+				std::cout << "ID number already exists!" << std::endl;
 			}
 			break;
 		}
@@ -200,7 +210,7 @@ void Model::handleNew(char type, char inputID, double xcord, double ycord)
 			}
 			else
 			{
-				throw Invalid_Input("Town Hall of input ID already exists.");
+				std::cout << "ID number already exists!" << std::endl;
 			}
 			break;
 		}
@@ -216,7 +226,7 @@ void Model::handleNew(char type, char inputID, double xcord, double ycord)
 			}
 			else
 			{
-				throw Invalid_Input("Person of input ID already exists.");
+				std::cout << "ID number already exists!" << std::endl;
 			}
 			break;
 		}
@@ -232,7 +242,7 @@ void Model::handleNew(char type, char inputID, double xcord, double ycord)
 			}
 			else
 			{
-				throw Invalid_Input("Person of input ID already exists.");
+				std::cout << "ID number already exists!" << std::endl;
 			}
 			break;
 		}
@@ -248,7 +258,7 @@ void Model::handleNew(char type, char inputID, double xcord, double ycord)
 			}
 			else
 			{
-				throw Invalid_Input("Person of input ID already exists.");
+				std::cout << "ID number already exists!" << std::endl;
 			}
 			break;
 		}
@@ -269,4 +279,93 @@ std::deque< Gold_Mine * > Model::getMinesList()
 		inspectionQueue.push_back(*mine_itr);
 	}
 	return inspectionQueue;
+}
+
+// PUBLIC MEMBER FUNCITON
+void Model::save(std::ofstream & file)
+{
+	file << time << std::endl;
+
+	// now we only store the objects that are alive
+	file << active_ptrs.size() << std::endl;
+
+	// first we make a catalog of all objects
+	for (active_itr = active_ptrs.begin(); active_itr != active_ptrs.end(); active_itr++)
+	{
+		file << (*active_itr)-> getDisplayCode() << std::endl;
+		file << (*active_itr)-> get_id() << std::endl;
+		file << (*active_itr)-> get_location().x << std::endl;
+		file << (*active_itr)-> get_location().y << std::endl;
+	}
+
+	// now save all the object variables
+	for (active_itr = active_ptrs.begin(); active_itr != active_ptrs.end(); active_itr++)
+	{
+		(*active_itr)-> save(file);
+	}
+}
+
+// PUBLIC MEMBER FUNCITON
+void Model::restore(std::ifstream & file)
+{
+	// first nuke all existing lists
+	this-> object_ptrs.clear();
+	this-> active_ptrs.clear();
+	this-> mine_ptrs.clear();
+	this-> hall_ptrs.clear();
+	this-> person_ptrs.clear();
+
+	file >> this-> time;
+
+	int objectCount;
+	file >> objectCount;
+	for (int i = 0; i < objectCount; i++)
+	{
+		// these five are what i call the "shuttle" variables that hold the value form file before instantiation
+		char objectCode;
+		int objectID;
+		double locationX;
+		double locationY;
+
+		// first fill shuttle variables
+		file >> objectCode >> objectID >> locationX >> locationY;
+
+		// then instantiate all the game objects with their constructors using shuttles
+		if (objectCode == 'G' || objectCode == 'g')
+		{
+			this-> mine_ptrs.push_back(new Gold_Mine(objectCode, objectID, Cart_Point(locationX, locationY)));
+			this-> object_ptrs.push_back(this-> mine_ptrs.back());
+		}
+		else if (objectCode == 'T' || objectCode == 't')
+		{
+			this-> hall_ptrs.push_back(new Town_Hall(objectCode, objectID, Cart_Point(locationX, locationY)));
+			this-> object_ptrs.push_back(this-> hall_ptrs.back());
+		}
+		else if (objectCode == 'M' || objectCode == 'm')
+		{
+			this-> person_ptrs.push_back(new Miner(objectCode, objectID, Cart_Point(locationX, locationY)));
+			this-> object_ptrs.push_back(this-> person_ptrs.back());
+		}
+		else if (objectCode == 'S' || objectCode == 's')
+		{
+			this-> person_ptrs.push_back(new Soldier(objectCode, objectID, Cart_Point(locationX, locationY)));
+			this-> object_ptrs.push_back(this-> person_ptrs.back());
+		}
+		else if (objectCode == 'I' || objectCode == 'i')
+		{
+			this-> person_ptrs.push_back(new Inspector(objectCode, objectID, Cart_Point(locationX, locationY)));
+			this-> object_ptrs.push_back(this-> person_ptrs.back());
+		}
+	}
+	
+	// upon restoration, since dead objects are not saved, the active list is the same as the object list
+		active_ptrs = object_ptrs;
+
+		// now get all the object specific stats
+		for (active_itr = active_ptrs.begin(); active_itr != active_ptrs.end(); active_itr++)
+		{
+			(*active_itr)-> restore(file, this);
+		}
+
+		std::cout << "Epic Game Restored" << std::endl;
 }

@@ -1,10 +1,12 @@
 #ifndef SOLDIER_H
 #define SOLDIER_H
 
+
+#include "Cart_Point.h"
 #include "Person.h"
 #include "Input_Handling.h"
 
-#include <iostream>
+#include <fstream>
 
 class Soldier : public Person
 {
@@ -12,6 +14,8 @@ public:
 	Soldier();
 
 	Soldier(const int inId, const Cart_Point inLoc);
+
+	Soldier(const char inputcode, const int inId, const Cart_Point inLoc);
 
 	~Soldier();
 
@@ -26,6 +30,12 @@ public:
 	
 	void take_hit(int attack_strength, Person * attackerPtr);
 	// makes the soldier take a hit and then attack the attacking soldier back
+
+	void save(std::ofstream & file);
+	// save state to file
+
+	void restore(std::ifstream & file, Model * model);
+	// load state from file
 
 private:
 	int attack_strength;

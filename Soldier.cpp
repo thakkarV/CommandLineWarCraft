@@ -1,4 +1,10 @@
 #include "Soldier.h"
+#include "Cart_Point.h"
+#include "Person.h"
+#include "Model.h"
+
+#include <iostream>
+#include <fstream>
 
 // CONSTRUCTOR: DEFAULT
 Soldier::Soldier() : Person('S')
@@ -12,6 +18,16 @@ Soldier::Soldier() : Person('S')
 
 // CONSTRUCTOR: INPUT BASED
 Soldier::Soldier(const int inId, const Cart_Point inLoc) : Person('S', inId, inLoc)
+{
+	this-> range = 2.0;
+	this-> state = 's';
+	this-> attack_strength = 2;
+	this-> target = 0; // NULL pointer
+	std::cout << "Soldier constructed." << std::endl;
+}
+
+// CONSTRUCTOR: INPUT BASED
+Soldier::Soldier(const char inputcode, const int inId, const Cart_Point inLoc) : Person(inputcode, inId, inLoc)
 {
 	this-> range = 2.0;
 	this-> state = 's';
@@ -93,14 +109,14 @@ bool Soldier::update()
 					// then attack the target
 					this-> target-> take_hit(this-> attack_strength, this);
 					// and then print message
-					std::cout << this-> display_code << this-> get_id() << ": Clang!" << std::endl;
+					std::cout << this-> display_code << this-> get_id() << ": Take That!" << std::endl;
 					return false;
 				}
 				else
 				{
 					// if the target dieded, stop and gloat
 					this-> state = 's';
-					std::cout << this-> display_code << this-> get_id() << ": I triumph!" << std::endl;
+					std::cout << this-> display_code << this-> get_id() << ": I win." << std::endl;
 					return true;
 				}
 			}
@@ -109,6 +125,7 @@ bool Soldier::update()
 				// if the target is out of range, print message, stop
 				this-> state = 's';
 				std::cout << this-> display_code << this-> get_id() << ": Target out of range." << std::endl;
+				std::cout << this-> display_code << this-> get_id() << ": Chaaaaarge." << std::endl;
 				return true;
 			}
 		}
@@ -168,5 +185,44 @@ void Soldier::take_hit(int attack_strength, Person * attackerPtr)
 		this-> health = 0;
 		this-> state = 'x';
 		std::cout << this-> display_code << this-> get_id() << ": Arrggh!" << std::endl;
+	}
+}
+
+// PURE VIRTUAL PUBLIC MEMBER FUNCTION
+void Soldier::save(std::ofstream & file)
+{
+	this-> Person::save(file);
+	file << this-> attack_strength << std::endl;
+	file << this-> range << std::endl;
+
+	// if a target exists, save the targets ID number
+	if ( (this-> target) )
+	{
+		file << this-> target -> get_id() << std::endl;
+	}
+	else
+	{
+		file << -1 << std::endl;
+	}
+}
+
+// PURE VIRTUAL PUBIC MEMEBR FUNCTION
+void Soldier::restore(std::ifstream & file, Model * model)
+{
+	this-> Person::restore(file, model);
+	file >> this-> attack_strength;
+	file >> this-> range;
+
+	// if a target exists, get it's pointer form ID numebr
+	int targetID;
+	file >> targetID;
+
+	if (targetID == -1)
+	{
+		this-> target = 0;
+	}
+	else
+	{
+		this-> target = model-> get_Person_ptr(targetID);
 	}
 }

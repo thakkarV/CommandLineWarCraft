@@ -1,10 +1,9 @@
 #ifndef GOLD_MINE_H
 #define GOLD_MINE_H
 
-#include "Cart_Point.h"
 #include "Game_Object.h"
 
-#include <iostream>
+#include <fstream>
 
 // gold mine is a derived object of game object
 class Gold_Mine : public Game_Object
@@ -13,7 +12,10 @@ public:
 	Gold_Mine();
 	//CONSTRUCTOR: DEFAULT
 	
-	Gold_Mine(int inputId, const Cart_Point inputLoc);
+	Gold_Mine(const int inputId, const Cart_Point inputLoc);
+	// CONSTRUCTOR: INPUT BASED
+
+	Gold_Mine(const char inputCode, const int inputId, const Cart_Point inputLoc);
 	// CONSTRUCTOR: INPUT BASED
 
 	~Gold_Mine();
@@ -45,6 +47,12 @@ public:
 
 	double getGoldAmount();
 	// getter for the private gold amount avariable, used for the inspector class
+
+	void save(std::ofstream & file);
+	// saves state to file
+
+	void restore(std::ifstream & file, Model * model);
+	// loads state from file
 
 private:
 	

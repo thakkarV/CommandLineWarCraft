@@ -30,22 +30,22 @@ Game_Object.o: Game_Object.cpp Game_Object.h Cart_Point.h
 Gold_Mine.o: Gold_Mine.cpp Gold_Mine.h Game_Object.h Cart_Point.h
 	$(CC) $(CPPFLAGSFCP) Gold_Mine.cpp $(CXXFLAGS) Gold_Mine.o
 
-Person.o: Person.cpp Person.h View.h Game_Object.h Cart_Point.h Cart_Vector.h Town_Hall.h Gold_Mine.h
+Model.o: Model.cpp Model.h Inspector.h Input_Handling.h Game_Object.h Person.h Town_Hall.h Gold_Mine.h Miner.h View.h Soldier.h
+	$(CC) $(CPPFLAGSFCP) Model.cpp $(CXXFLAGS) Model.o 
+
+Person.o: Person.cpp Person.h View.h Game_Object.h Cart_Point.h Cart_Vector.h Town_Hall.h Gold_Mine.h Model.h
 	$(CC) $(CPPFLAGSFCP) Person.cpp $(CXXFLAGS) Person.o
 
 Miner.o: Miner.cpp Miner.h Person.h Game_Object.h Gold_Mine.h Town_Hall.h Cart_Point.h Cart_Vector.h
 	$(CC) $(CPPFLAGSFCP) Miner.cpp $(CXXFLAGS) Miner.o 
 
-Soldier.o: Soldier.cpp Soldier.h Person.h
+Soldier.o: Soldier.cpp Soldier.h Person.h Model.h
 	$(CC) $(CPPFLAGSFCP) Soldier.cpp $(CXXFLAGS) Soldier.o
 
-Inspector.o: Inspector.cpp Inspector.h Person.h Gold_Mine.h Model.h Input_Handling.h Cart_Point.h
+Inspector.o: Inspector.cpp Inspector.h Person.h Gold_Mine.h Model.h Input_Handling.h Cart_Point.h Model.h
 	$(CC) $(CPPFLAGSFCP) Inspector.cpp $(CXXFLAGS) Inspector.o
 
-Model.o: Model.cpp Model.h Inspector.h Input_Handling.h Game_Object.h Person.h Town_Hall.h Gold_Mine.h Miner.h View.h Soldier.h Input_Handling.h
-	$(CC) $(CPPFLAGSFCP) Model.cpp $(CXXFLAGS) Model.o 
-
-Town_Hall.o: Town_Hall.cpp Town_Hall.h Game_Object.h Cart_Point.h
+Town_Hall.o: Town_Hall.cpp Town_Hall.h Game_Object.h Cart_Point.h Model.h
 	$(CC) $(CPPFLAGSFCP) Town_Hall.cpp $(CXXFLAGS) Town_Hall.o 
 
 View.o: View.cpp View.h Game_Object.h Cart_Point.h
